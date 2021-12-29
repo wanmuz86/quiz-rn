@@ -10,6 +10,8 @@ export default function Quiz({navigation}) {
     const [options, setOptions] = useState([])
     const [message, setMessage] = useState('')
     const [score, setScore] = useState(0)
+    const [startTime,setStartTime] = useState(0)
+
 
     const shuffle = (array) => {
         let currentIndex = array.length, randomIndex;
@@ -33,6 +35,8 @@ export default function Quiz({navigation}) {
         fetch('https://opentdb.com/api.php?amount=10&category=18')
             .then(response => response.json())
             .then(data => {
+                // To get the time user starts answering the question
+                setStartTime(new Date())
                 setQuestions(data["results"])
                 let options = data["results"][questionNumber]["incorrect_answers"]
                 options.push(data["results"][questionNumber]["correct_answer"])
@@ -54,9 +58,15 @@ export default function Quiz({navigation}) {
         // Wait for 3 s then only go to the next page
 
         if (questionNumber == 9){
-            navigation.push('Score',{'score':score})
+            // To get time , user finish answering the questions
+           
+           let endTime = new Date()
+         
+            let duration = ((endTime - startTime) / 1000)
+            navigation.push('Score',{'score':score,'duration':duration})
         }
         else {
+            // Wait for 1 seconds, check and show the result move to next page
         setTimeout(() => {
             let options = questions[questionNumber + 1]["incorrect_answers"]
             options.push(questions[questionNumber + 1]["correct_answer"])
