@@ -35,12 +35,14 @@ export default function Quiz({navigation}) {
         fetch('https://opentdb.com/api.php?amount=10&category=18')
             .then(response => response.json())
             .then(data => {
+                console.log(data)
                 // To get the time user starts answering the question
                 setStartTime(new Date())
                 setQuestions(data["results"])
                 let options = data["results"][questionNumber]["incorrect_answers"]
                 options.push(data["results"][questionNumber]["correct_answer"])
                 setOptions(shuffle(options))
+                console.log(data)
 
             });
     }, [])

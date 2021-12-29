@@ -43,9 +43,8 @@ export default function Score({navigation}) {
 
     let highscores = await AsyncStorage.getItem('@scores')
 
-    // THere is no high score in the database
-    console.log(highscores)
   
+    /** If there is no high score in the database... it will go in this branch of if */
     if (highscores == null){
       let newScore = []
       let score = {
@@ -57,6 +56,8 @@ export default function Score({navigation}) {
       await AsyncStorage.setItem('@scores', JSON.stringify(newScore))
     }
     else if (JSON.parse(highscores).length < 5){
+
+       /** If there is high score in the database... but, the number of high score is still lower than 5 */
       let newScore = JSON.parse(highscores)
       
       let score = {
@@ -65,7 +66,44 @@ export default function Score({navigation}) {
       }
       newScore.push(score) 
       console.log(newScore)
+      newScore.sort(
+        function(a, b) {          
+           if (a.score === b.score) {
+              // Duration is only important when score are the same
+              return a.duration - b.duration;
+           }
+           return a.score < b.score ? 1 : -1;
+        });
       await AsyncStorage.setItem('@scores', JSON.stringify(newScore))
+    }
+    else if (JSON.parse(highscores).length == 5){
+      /** If there is high score in the database and the number of high score is 5  */
+      console.log("last scenario")
+      let newScore = JSON.parse(highscores)
+      
+      if (
+        newScore[4].score < navigation.getParam('score') || (
+        (newScore[4].score == navigation.getParam('score') &&
+        newScore[4].duration >=  navigation.getParam('duration')) )
+      ){
+        newScore.pop()
+        let score = {
+          "score":navigation.getParam('score'),
+          "duration":navigation.getParam('duration')
+        }
+        newScore.push(score) 
+        console.log(newScore)
+        newScore.sort(
+          function(a, b) {          
+             if (a.score === b.score) {
+                // Duration is only important when score are the same
+                return a.duration - b.duration;
+             }
+             return a.score < b.score ? 1 : -1;
+          });
+        await AsyncStorage.setItem('@scores', JSON.stringify(newScore))
+      }
+
     }
 
      
